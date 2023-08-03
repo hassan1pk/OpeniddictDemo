@@ -17,6 +17,21 @@ namespace AuthorizationServer.Controllers
             return View();
         }
 
+        bool IsValidUser(LoginViewModel model)
+        {
+            if(model.Username.Equals("hassan",StringComparison.OrdinalIgnoreCase)
+                && model.Password.Equals("123456"))
+            {
+                return true;
+            }
+            else if (model.Username.Equals("aima", StringComparison.OrdinalIgnoreCase)
+                && model.Password.Equals("123456"))
+            {
+                return true;
+            }
+            else { return false; }
+        }
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -24,7 +39,7 @@ namespace AuthorizationServer.Controllers
         {
             ViewData["ReturnUrl"] = model.ReturnUrl;
 
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && IsValidUser(model))
             {
                 var claims = new List<Claim>
                 {
