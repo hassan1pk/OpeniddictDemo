@@ -37,7 +37,8 @@ builder.Services.AddOpenIddict()
         {
             options
                 .AllowClientCredentialsFlow()
-                .AllowAuthorizationCodeFlow().RequireProofKeyForCodeExchange();
+                .AllowAuthorizationCodeFlow().RequireProofKeyForCodeExchange()
+                .AllowRefreshTokenFlow();
 
             options
                 .SetAuthorizationEndpointUris("/connect/authorize")
