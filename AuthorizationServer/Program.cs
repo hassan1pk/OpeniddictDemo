@@ -38,6 +38,7 @@ builder.Services.AddOpenIddict()
             options
                 .AllowClientCredentialsFlow()
                 .AllowAuthorizationCodeFlow().RequireProofKeyForCodeExchange()
+                .AllowPasswordFlow().RequireProofKeyForCodeExchange()
                 .AllowRefreshTokenFlow();
 
             options

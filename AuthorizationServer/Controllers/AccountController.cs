@@ -17,15 +17,15 @@ namespace AuthorizationServer.Controllers
             return View();
         }
 
-        bool IsValidUser(LoginViewModel model)
+        bool IsValidUser(string username, string password)
         {
-            if(model.Username.Equals("hassan",StringComparison.OrdinalIgnoreCase)
-                && model.Password.Equals("123456"))
+            if(username.Equals("hassan",StringComparison.OrdinalIgnoreCase)
+                && password.Equals("123456"))
             {
                 return true;
             }
-            else if (model.Username.Equals("aima", StringComparison.OrdinalIgnoreCase)
-                && model.Password.Equals("123456"))
+            else if (username.Equals("aima", StringComparison.OrdinalIgnoreCase)
+                && password.Equals("123456"))
             {
                 return true;
             }
@@ -39,7 +39,7 @@ namespace AuthorizationServer.Controllers
         {
             ViewData["ReturnUrl"] = model.ReturnUrl;
 
-            if (ModelState.IsValid && IsValidUser(model))
+            if (ModelState.IsValid && IsValidUser(model.Username, model.Password))
             {
                 var claims = new List<Claim>
                 {

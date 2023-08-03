@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using static OpenIddict.Abstractions.OpenIddictConstants;
+using System.Collections.Immutable;
 
 namespace AuthorizationServer.Controllers
 {
@@ -43,6 +47,40 @@ namespace AuthorizationServer.Controllers
             {
                 // Retrieve the claims principal stored in the authorization code
                 claimsPrincipal = (await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)).Principal!;
+            }
+            else if(request.IsPasswordGrantType())
+            {
+                if(!IsValidUser(request.Username!, request.Password!))
+                {
+                    var properties = new AuthenticationProperties(new Dictionary<string, string>
+                    {
+                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
+                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
+                        "The username/password couple is invalid."
+                    });
+
+                    return Forbid(properties, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                }
+                // Create the claims-based identity that will be used by OpenIddict to generate tokens.
+                var identity = new ClaimsIdentity(
+                    authenticationType: TokenValidationParameters.DefaultAuthenticationType,
+                    nameType: Claims.Name,
+                    roleType: Claims.Role);
+
+                // Add the claims that will be persisted in the tokens.
+                identity.SetClaim(Claims.Subject, OpenIddictConstants.Claims.Subject)
+                        .SetClaim(Claims.Email, "some@email.com")
+                        .SetClaim(Claims.Name, "Some name")
+                        .SetClaims(Claims.Role,new string[] { "Some role" }.ToImmutableArray());
+
+                // Note: in this sample, the granted scopes match the requested scope
+                // but you may want to allow the user to uncheck specific scopes.
+                // For that, simply restrict the list of scopes before calling SetScopes.
+                identity.SetScopes(request.GetScopes());
+                identity.SetDestinations(GetDestinations);
+
+                // Returning a SignInResult will ask OpenIddict to issue the appropriate access/identity tokens.
+                return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
             else if (request.IsRefreshTokenGrantType())
             {
@@ -112,6 +150,62 @@ namespace AuthorizationServer.Controllers
                 Occupation = "Developer",
                 Age = 43
             });
+        }
+
+        private static IEnumerable<string> GetDestinations(Claim claim)
+        {
+            // Note: by default, claims are NOT automatically included in the access and identity tokens.
+            // To allow OpenIddict to serialize them, you must attach them a destination, that specifies
+            // whether they should be included in access tokens, in identity tokens or in both.
+
+            switch (claim.Type)
+            {
+                case Claims.Name:
+                    yield return Destinations.AccessToken;
+
+                    if (claim.Subject.HasScope(Scopes.Profile))
+                        yield return Destinations.IdentityToken;
+
+                    yield break;
+
+                case Claims.Email:
+                    yield return Destinations.AccessToken;
+
+                    if (claim.Subject.HasScope(Scopes.Email))
+                        yield return Destinations.IdentityToken;
+
+                    yield break;
+
+                case Claims.Role:
+                    yield return Destinations.AccessToken;
+
+                    if (claim.Subject.HasScope(Scopes.Roles))
+                        yield return Destinations.IdentityToken;
+
+                    yield break;
+
+                // Never include the security stamp in the access and identity tokens, as it's a secret value.
+                case "AspNet.Identity.SecurityStamp": yield break;
+
+                default:
+                    yield return Destinations.AccessToken;
+                    yield break;
+            }
+        }
+
+        bool IsValidUser(string username, string password)
+        {
+            if (username.Equals("hassan", StringComparison.OrdinalIgnoreCase)
+                && password.Equals("123456"))
+            {
+                return true;
+            }
+            else if (username.Equals("aima", StringComparison.OrdinalIgnoreCase)
+                && password.Equals("123456"))
+            {
+                return true;
+            }
+            else { return false; }
         }
 
     }
