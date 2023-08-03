@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AuthorizationServer.Controllers
 {
@@ -31,6 +32,8 @@ namespace AuthorizationServer.Controllers
 
                 // Add some claim, don't forget to add destination otherwise it won't be added to the access token.
                 identity.AddClaim("some-claim", "some-value", OpenIddictConstants.Destinations.AccessToken);
+
+                new Claim(OpenIddictConstants.Claims.Email, "some@email").SetDestinations(OpenIddictConstants.Destinations.IdentityToken);
 
                 claimsPrincipal = new ClaimsPrincipal(identity);
 
@@ -91,5 +94,20 @@ namespace AuthorizationServer.Controllers
             // Signing in with the OpenIddict authentiction scheme trigger OpenIddict to issue a code (which can be exchanged for an access token)
             return SignIn(claimsPrincipal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
+
+        [Authorize(AuthenticationSchemes = OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)]
+        [HttpGet("~/connect/userinfo")]
+        public async Task<IActionResult> Userinfo()
+        {
+            var claimsPrincipal = (await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)).Principal;
+
+            return Ok(new
+            {
+                Name = claimsPrincipal!.GetClaim(OpenIddictConstants.Claims.Subject),
+                Occupation = "Developer",
+                Age = 43
+            });
+        }
+
     }
 }
