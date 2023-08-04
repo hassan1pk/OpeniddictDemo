@@ -15,34 +15,56 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
         {
             options.LoginPath = "/account/login";
+            
         });
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(config =>
+
+
+//builder.Services.AddIdentity<ApplicationUser, IdentityRole>(config =>
+//{
+//    //Setting some configurations
+//    config.User.RequireUniqueEmail = true;
+//    config.Password.RequireNonAlphanumeric = false;
+//    config.SignIn = new SignInOptions() { RequireConfirmedAccount = false, RequireConfirmedEmail = false, RequireConfirmedPhoneNumber = false };
+//    //config.Cookies.ApplicationCookie.AutomaticChallenge = false;
+//    //config.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents()
+//    //{
+//    //    OnRedirectToLogin = context =>
+//    //    {
+//    //        if (context.Request.Path.StartsWithSegments("/api") &&
+//    //        context.Response.StatusCode == 200)
+//    //            context.Response.StatusCode = 401;
+//    //        return Task.CompletedTask;
+//    //    },
+//    //    OnRedirectToAccessDenied = context =>
+//    //    {
+//    //        if (context.Request.Path.StartsWithSegments("/api") &&
+//    //        context.Response.StatusCode == 200)
+//    //            context.Response.StatusCode = 403;
+//    //        return Task.CompletedTask;
+//    //    }
+//    //};
+//})
+//        .AddEntityFrameworkStores<ApplicationDbContext>().AddSignInManager()
+//.AddDefaultTokenProviders();
+
+builder.Services.AddIdentityCore<ApplicationUser>(options =>
 {
-    //Setting some configurations
-    config.User.RequireUniqueEmail = true;
-    config.Password.RequireNonAlphanumeric = false;
-    /*config.Cookies.ApplicationCookie.AutomaticChallenge = false;
-    config.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents()
+    options.User.RequireUniqueEmail = true;
+    options.Password.RequireNonAlphanumeric = false;
+}).AddEntityFrameworkStores<ApplicationDbContext>().AddSignInManager()
+.AddDefaultTokenProviders();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{    
+    options.Cookie = new CookieBuilder() { Name = ".AspNetCore.Cookies" };
+    options.Events.OnRedirectToLogin = context =>
     {
-        OnRedirectToLogin = context =>
-        {
-            if (context.Request.Path.StartsWithSegments("/api") &&
-            context.Response.StatusCode == 200)
-                context.Response.StatusCode = 401;
-            return Task.CompletedTask;
-        },
-        OnRedirectToAccessDenied = context =>
-        {
-            if (context.Request.Path.StartsWithSegments("/api") &&
-            context.Response.StatusCode == 200)
-                context.Response.StatusCode = 403;
-            return Task.CompletedTask;
-        }
-    };*/
-})
-        .AddEntityFrameworkStores<ApplicationDbContext>()
-        .AddDefaultTokenProviders();
+        context.Response.StatusCode = 401;
+
+        return Task.CompletedTask;
+    };
+});
 
 builder.Services.AddDbContext<IdentityDbContext>(options =>
 {
