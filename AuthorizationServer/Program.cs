@@ -1,5 +1,8 @@
 using AuthorizationServer;
+using AuthorizationServer.Data;
+using AuthorizationServer.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,13 +16,48 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
             options.LoginPath = "/account/login";
         });
 
-builder.Services.AddDbContext<DbContext>(options =>
+//builder.Services.AddIdentity<ApplicationUser, IdentityRole>(config =>
+//{
+//    //Setting some configurations
+//    config.User.RequireUniqueEmail = true;
+//    config.Password.RequireNonAlphanumeric = false;
+//    /*config.Cookies.ApplicationCookie.AutomaticChallenge = false;
+//    config.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents()
+//    {
+//        OnRedirectToLogin = context =>
+//        {
+//            if (context.Request.Path.StartsWithSegments("/api") &&
+//            context.Response.StatusCode == 200)
+//                context.Response.StatusCode = 401;
+//            return Task.CompletedTask;
+//        },
+//        OnRedirectToAccessDenied = context =>
+//        {
+//            if (context.Request.Path.StartsWithSegments("/api") &&
+//            context.Response.StatusCode == 200)
+//                context.Response.StatusCode = 403;
+//            return Task.CompletedTask;
+//        }
+//    };*/
+//})
+        //.AddEntityFrameworkStores<ApplicationDbContext>()
+        //.AddDefaultTokenProviders();
+
+builder.Services.AddDbContext<IdentityDbContext>(options =>
 {
     // Configure the context to use an in-memory store.
-    options.UseInMemoryDatabase(nameof(DbContext));
+    //options.UseInMemoryDatabase(nameof(IdentityDbContext));
+    options.UseSqlite(builder.Configuration.GetConnectionString("IdentityDatabase"));
 
     // Register the entity sets needed by OpenIddict.
     options.UseOpenIddict();
+});
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseSqlite(builder.Configuration.GetConnectionString("SqliteDatabase"));
+
+    
 });
 
 builder.Services.AddOpenIddict()
@@ -29,7 +67,7 @@ builder.Services.AddOpenIddict()
         {
             // Configure OpenIddict to use the EF Core stores/models.
             options.UseEntityFrameworkCore()
-                .UseDbContext<DbContext>();
+                .UseDbContext<IdentityDbContext>();            
         })
 
         // Register the OpenIddict server components.
