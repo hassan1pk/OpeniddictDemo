@@ -25,4 +25,8 @@
     <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="4.6.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Help\" />
+  </ItemGroup>
+
 </Project>

@@ -4,6 +4,7 @@ using AuthorizationServer.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,32 +17,32 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
             options.LoginPath = "/account/login";
         });
 
-//builder.Services.AddIdentity<ApplicationUser, IdentityRole>(config =>
-//{
-//    //Setting some configurations
-//    config.User.RequireUniqueEmail = true;
-//    config.Password.RequireNonAlphanumeric = false;
-//    /*config.Cookies.ApplicationCookie.AutomaticChallenge = false;
-//    config.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents()
-//    {
-//        OnRedirectToLogin = context =>
-//        {
-//            if (context.Request.Path.StartsWithSegments("/api") &&
-//            context.Response.StatusCode == 200)
-//                context.Response.StatusCode = 401;
-//            return Task.CompletedTask;
-//        },
-//        OnRedirectToAccessDenied = context =>
-//        {
-//            if (context.Request.Path.StartsWithSegments("/api") &&
-//            context.Response.StatusCode == 200)
-//                context.Response.StatusCode = 403;
-//            return Task.CompletedTask;
-//        }
-//    };*/
-//})
-        //.AddEntityFrameworkStores<ApplicationDbContext>()
-        //.AddDefaultTokenProviders();
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(config =>
+{
+    //Setting some configurations
+    config.User.RequireUniqueEmail = true;
+    config.Password.RequireNonAlphanumeric = false;
+    /*config.Cookies.ApplicationCookie.AutomaticChallenge = false;
+    config.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents()
+    {
+        OnRedirectToLogin = context =>
+        {
+            if (context.Request.Path.StartsWithSegments("/api") &&
+            context.Response.StatusCode == 200)
+                context.Response.StatusCode = 401;
+            return Task.CompletedTask;
+        },
+        OnRedirectToAccessDenied = context =>
+        {
+            if (context.Request.Path.StartsWithSegments("/api") &&
+            context.Response.StatusCode == 200)
+                context.Response.StatusCode = 403;
+            return Task.CompletedTask;
+        }
+    };*/
+})
+        .AddEntityFrameworkStores<ApplicationDbContext>()
+        .AddDefaultTokenProviders();
 
 builder.Services.AddDbContext<IdentityDbContext>(options =>
 {
@@ -132,5 +133,26 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+//Seed data
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        await context.Database.MigrateAsync();
+        var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        //await ContextSeed.SeedRolesAsync(userManager, roleManager);
+        await ContextSeed.SeedSuperAdminAsync(userManager, roleManager);
+    }
+    catch (Exception ex)
+    {
+        var logger = loggerFactory.CreateLogger<Program>();
+        logger.LogError(ex, "An error occurred seeding the DB.");
+    }
+}
 
 app.Run();
