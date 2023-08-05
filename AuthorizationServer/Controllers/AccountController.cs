@@ -29,21 +29,6 @@ namespace AuthorizationServer.Controllers
             return View();
         }
 
-        /*bool IsValidUser(string username, string password)
-        {
-            if(username.Equals("hassan",StringComparison.OrdinalIgnoreCase)
-                && password.Equals("123456"))
-            {
-                return true;
-            }
-            else if (username.Equals("aima", StringComparison.OrdinalIgnoreCase)
-                && password.Equals("123456"))
-            {
-                return true;
-            }
-            else { return false; }
-        }*/
-
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -51,7 +36,7 @@ namespace AuthorizationServer.Controllers
         {
             ViewData["ReturnUrl"] = model.ReturnUrl;
 
-            if (ModelState.IsValid /*&& IsValidUser(model.Username, model.Password)*/)
+            if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(model.Username);
                 if (user == null)
@@ -93,7 +78,7 @@ namespace AuthorizationServer.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ExternalLogin(string provider, string returnUrl = null)
+        public IActionResult ExternalLogin(string provider, string? returnUrl = null)
         {
             var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl });
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
@@ -101,7 +86,7 @@ namespace AuthorizationServer.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null)
+        public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = null)
         {
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
@@ -146,6 +131,14 @@ namespace AuthorizationServer.Controllers
             if (info == null)
                 return View("/Views/Shared/Error.cshtml");
 
+            var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, info.Principal.FindFirstValue(ClaimTypes.Email))
+                };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+
             var user = await _userManager.FindByEmailAsync(model.Email);
             IdentityResult result;
 
@@ -155,6 +148,9 @@ namespace AuthorizationServer.Controllers
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
+                    
+                    await HttpContext.SignInAsync(new ClaimsPrincipal(claimsIdentity));
+
                     return RedirectToLocal(returnUrl);
                 }
             }
@@ -175,6 +171,7 @@ namespace AuthorizationServer.Controllers
                     {
                         //TODO: Send an emal for the email confirmation and add a default role as in the Register action
                         await _signInManager.SignInAsync(user, isPersistent: false);
+                        await HttpContext.SignInAsync(new ClaimsPrincipal(claimsIdentity));
                         return RedirectToLocal(returnUrl);
                     }
                 }
@@ -188,7 +185,7 @@ namespace AuthorizationServer.Controllers
             return View(nameof(ExternalLogin), model);
         }
 
-        private ActionResult RedirectToLocal(string returnUrl)
+        private ActionResult RedirectToLocal(string? returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))
             {
