@@ -18,18 +18,16 @@ services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             options.LoginPath = "/account/login";
 
         })
-        //.AddCookie("Identity.External")
-        //.AddCookie("Identity.Application")  
         .AddCookie(IdentityConstants.ApplicationScheme)
-        //.AddCookie(IdentityConstants.ExternalScheme)
+        .AddCookie(IdentityConstants.ExternalScheme)
         .AddGoogle(googleOptions =>
         {
             googleOptions.ClientId = configuration["Authentication:Google:ClientId"];
             googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
             googleOptions.SignInScheme = IdentityConstants.ExternalScheme;
-            
-        })
-        .AddExternalCookie();
+
+        });
+        //.AddExternalCookie();
 
 
 
@@ -65,7 +63,10 @@ services.AddIdentityCore<ApplicationUser>(options =>
 {
     options.User.RequireUniqueEmail = true;
     options.Password.RequireNonAlphanumeric = false;
-}).AddEntityFrameworkStores<ApplicationDbContext>().AddSignInManager()
+}).AddSignInManager()
+.AddRoles<IdentityRole>()
+    .AddRoleManager<RoleManager<IdentityRole>>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
 //builder.Services.ConfigureApplicationCookie(options =>
@@ -179,7 +180,7 @@ using (var scope = app.Services.CreateScope())
         await context.Database.MigrateAsync();
         var userManager = appServices.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = appServices.GetRequiredService<RoleManager<IdentityRole>>();
-        //await ContextSeed.SeedRolesAsync(userManager, roleManager);
+        await ContextSeed.SeedRolesAsync(userManager, roleManager);
         await ContextSeed.SeedSuperAdminAsync(userManager, roleManager);
     }
     catch (Exception ex)
