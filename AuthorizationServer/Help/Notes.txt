@@ -1,1 +1,12 @@
- D:\Programs\OpeniddictDemo> dotnet ef migrations add IdentityAdded -p AuthorizationServer --context=ApplicationDbContext --verbose
+For creating migration script for Identity
+------------------------------------------
+D:\Programs\OpeniddictDemo> dotnet ef migrations add IdentityAdded -p AuthorizationServer --context=ApplicationDbContext --verbose
+
+For initialing secret storage
+-----------------------------
+dotnet user-secrets init
+
+Storing Google client id and client secrets in secret storage
+-------------------------------------------------------------
+dotnet user-secrets set "Authentication:Google:ClientId" "<client-id>"
+dotnet user-secrets set "Authentication:Google:ClientSecret" "<client-secret>"

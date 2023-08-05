@@ -60,7 +60,7 @@ namespace AuthorizationServer.Controllers
             {
                 if(! await IsValidUser(request.Username!, request.Password!))
                 {
-                    var properties = new AuthenticationProperties(new Dictionary<string, string>
+                    var properties = new AuthenticationProperties(new Dictionary<string, string?>
                     {
                         [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
                         [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
@@ -171,7 +171,7 @@ namespace AuthorizationServer.Controllers
                 case Claims.Name:
                     yield return Destinations.AccessToken;
 
-                    if (claim.Subject.HasScope(Scopes.Profile))
+                    if (claim.Subject!.HasScope(Scopes.Profile))
                         yield return Destinations.IdentityToken;
 
                     yield break;
@@ -179,7 +179,7 @@ namespace AuthorizationServer.Controllers
                 case Claims.Email:
                     yield return Destinations.AccessToken;
 
-                    if (claim.Subject.HasScope(Scopes.Email))
+                    if (claim.Subject!.HasScope(Scopes.Email))
                         yield return Destinations.IdentityToken;
 
                     yield break;
@@ -187,7 +187,7 @@ namespace AuthorizationServer.Controllers
                 case Claims.Role:
                     yield return Destinations.AccessToken;
 
-                    if (claim.Subject.HasScope(Scopes.Roles))
+                    if (claim.Subject!.HasScope(Scopes.Roles))
                         yield return Destinations.IdentityToken;
 
                     yield break;

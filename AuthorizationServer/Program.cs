@@ -7,16 +7,29 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
+var configuration = builder.Configuration;
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
-
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+services.AddControllersWithViews();
+services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
         .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
         {
             options.LoginPath = "/account/login";
+
+        })
+        //.AddCookie("Identity.External")
+        //.AddCookie("Identity.Application")  
+        .AddCookie(IdentityConstants.ApplicationScheme)
+        //.AddCookie(IdentityConstants.ExternalScheme)
+        .AddGoogle(googleOptions =>
+        {
+            googleOptions.ClientId = configuration["Authentication:Google:ClientId"];
+            googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+            googleOptions.SignInScheme = IdentityConstants.ExternalScheme;
             
-        });
+        })
+        .AddExternalCookie();
 
 
 
@@ -48,7 +61,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 //        .AddEntityFrameworkStores<ApplicationDbContext>().AddSignInManager()
 //.AddDefaultTokenProviders();
 
-builder.Services.AddIdentityCore<ApplicationUser>(options =>
+services.AddIdentityCore<ApplicationUser>(options =>
 {
     options.User.RequireUniqueEmail = true;
     options.Password.RequireNonAlphanumeric = false;
@@ -65,7 +78,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
 //    };
 //});
 
-builder.Services.AddDbContext<IdentityDbContext>(options =>
+services.AddDbContext<IdentityDbContext>(options =>
 {
     // Configure the context to use an in-memory store.
     //options.UseInMemoryDatabase(nameof(IdentityDbContext));
@@ -75,14 +88,14 @@ builder.Services.AddDbContext<IdentityDbContext>(options =>
     options.UseOpenIddict();
 });
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlite(builder.Configuration.GetConnectionString("SqliteDatabase"));
 
     
 });
 
-builder.Services.AddOpenIddict()
+services.AddOpenIddict()
 
         // Register the OpenIddict core components.
         .AddCore(options =>
@@ -125,7 +138,7 @@ builder.Services.AddOpenIddict()
                 .EnableUserinfoEndpointPassthrough();
         });
 
-builder.Services.AddHostedService<TestData>();
+services.AddHostedService<TestData>();
 
 var app = builder.Build();
 
@@ -158,14 +171,14 @@ app.MapControllerRoute(
 //Seed data
 using (var scope = app.Services.CreateScope())
 {
-    var services = scope.ServiceProvider;
-    var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+    var appServices = scope.ServiceProvider;
+    var loggerFactory = appServices.GetRequiredService<ILoggerFactory>();
     try
     {
-        var context = services.GetRequiredService<ApplicationDbContext>();
+        var context = appServices.GetRequiredService<ApplicationDbContext>();
         await context.Database.MigrateAsync();
-        var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        var userManager = appServices.GetRequiredService<UserManager<ApplicationUser>>();
+        var roleManager = appServices.GetRequiredService<RoleManager<IdentityRole>>();
         //await ContextSeed.SeedRolesAsync(userManager, roleManager);
         await ContextSeed.SeedSuperAdminAsync(userManager, roleManager);
     }
