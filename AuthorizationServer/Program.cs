@@ -55,16 +55,15 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
 }).AddEntityFrameworkStores<ApplicationDbContext>().AddSignInManager()
 .AddDefaultTokenProviders();
 
-builder.Services.ConfigureApplicationCookie(options =>
-{    
-    options.Cookie = new CookieBuilder() { Name = ".AspNetCore.Cookies" };
-    options.Events.OnRedirectToLogin = context =>
-    {
-        context.Response.StatusCode = 401;
+//builder.Services.ConfigureApplicationCookie(options =>
+//{    
+//   options.Events.OnRedirectToLogin = context =>
+//    {
+//        context.Response.StatusCode = 401;
 
-        return Task.CompletedTask;
-    };
-});
+//        return Task.CompletedTask;
+//    };
+//});
 
 builder.Services.AddDbContext<IdentityDbContext>(options =>
 {
