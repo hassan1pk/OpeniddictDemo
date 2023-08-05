@@ -2,6 +2,7 @@ using AuthorizationServer;
 using AuthorizationServer.Data;
 using AuthorizationServer.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
@@ -26,8 +27,15 @@ services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
             googleOptions.SignInScheme = IdentityConstants.ExternalScheme;
 
+        })
+        .AddMicrosoftAccount(microsoftOptions =>
+        {
+            microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"];
+            microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
+            microsoftOptions.SignInScheme = IdentityConstants.ExternalScheme;
         });
-        //.AddExternalCookie();
+
+//.AddExternalCookie();
 
 
 

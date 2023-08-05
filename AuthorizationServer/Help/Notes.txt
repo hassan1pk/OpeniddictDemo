@@ -10,3 +10,13 @@ Storing Google client id and client secrets in secret storage
 -------------------------------------------------------------
 dotnet user-secrets set "Authentication:Google:ClientId" "<client-id>"
 dotnet user-secrets set "Authentication:Google:ClientSecret" "<client-secret>"
+
+Storing Facebook app id and app secret in the secret storage
+------------------------------------------------------------
+dotnet user-secrets set "Authentication:Facebook:AppId" "<app-id>"
+dotnet user-secrets set "Authentication:Facebook:AppSecret" "<app-secret>"
+
+Storing Microsoft client id and client secret in secret storage
+--------------------------------------------------------
+dotnet user-secrets set "Authentication:Microsoft:ClientId" "<client-id>"
+dotnet user-secrets set "Authentication:Microsoft:ClientSecret" "<client-secret>"
