@@ -361,3 +361,12 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/AuthorizationServer/IdentityDatabase.db-shm
+/AuthorizationServer/IdentityDatabase.db-wal
+/AuthorizationServer/IdentityDatabase.db
+/AuthorizationServer/LocalDatabase.db
+/AuthorizationServer/LocalDatabase.db-shm
+/AuthorizationServer/LocalDatabase.db-wal
+/AuthorizationServer/OpenIddictDatabase.db
+/AuthorizationServer/OpenIddictDatabase.db-shm
+/AuthorizationServer/OpenIddictDatabase.db-wal

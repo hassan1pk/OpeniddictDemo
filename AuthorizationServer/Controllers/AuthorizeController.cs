@@ -11,11 +11,19 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using System.Collections.Immutable;
+using AuthorizationServer.Models;
+//using Microsoft.AspNet.Identity;
 
 namespace AuthorizationServer.Controllers
-{
+{    
     public class AuthorizationController : Controller
     {
+        private readonly UserManager<ApplicationUser> _userManager;
+        public AuthorizationController(UserManager<ApplicationUser> userManager)
+        {
+            _userManager = userManager;
+        }
+
         [HttpPost("~/connect/token")]
         public async Task<IActionResult> Exchange()
         {
@@ -50,9 +58,9 @@ namespace AuthorizationServer.Controllers
             }
             else if(request.IsPasswordGrantType())
             {
-                if(!IsValidUser(request.Username!, request.Password!))
+                if(! await IsValidUser(request.Username!, request.Password!))
                 {
-                    var properties = new AuthenticationProperties(new Dictionary<string, string>
+                    var properties = new AuthenticationProperties(new Dictionary<string, string?>
                     {
                         [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
                         [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
@@ -163,7 +171,7 @@ namespace AuthorizationServer.Controllers
                 case Claims.Name:
                     yield return Destinations.AccessToken;
 
-                    if (claim.Subject.HasScope(Scopes.Profile))
+                    if (claim.Subject!.HasScope(Scopes.Profile))
                         yield return Destinations.IdentityToken;
 
                     yield break;
@@ -171,7 +179,7 @@ namespace AuthorizationServer.Controllers
                 case Claims.Email:
                     yield return Destinations.AccessToken;
 
-                    if (claim.Subject.HasScope(Scopes.Email))
+                    if (claim.Subject!.HasScope(Scopes.Email))
                         yield return Destinations.IdentityToken;
 
                     yield break;
@@ -179,7 +187,7 @@ namespace AuthorizationServer.Controllers
                 case Claims.Role:
                     yield return Destinations.AccessToken;
 
-                    if (claim.Subject.HasScope(Scopes.Roles))
+                    if (claim.Subject!.HasScope(Scopes.Roles))
                         yield return Destinations.IdentityToken;
 
                     yield break;
@@ -193,9 +201,9 @@ namespace AuthorizationServer.Controllers
             }
         }
 
-        bool IsValidUser(string username, string password)
+        async Task<bool> IsValidUser(string username, string password)
         {
-            if (username.Equals("hassan", StringComparison.OrdinalIgnoreCase)
+            /*if (username.Equals("hassan", StringComparison.OrdinalIgnoreCase)
                 && password.Equals("123456"))
             {
                 return true;
@@ -205,7 +213,20 @@ namespace AuthorizationServer.Controllers
             {
                 return true;
             }
-            else { return false; }
+            else { return false; }*/
+
+            var user = await _userManager.FindByEmailAsync(username);
+            if (user == null)
+            {
+                return false;
+            }
+            var result = await _userManager.CheckPasswordAsync(user, password);
+            if (result == false)
+            {
+                return false;
+            }
+
+            return true;
         }
 
     }
