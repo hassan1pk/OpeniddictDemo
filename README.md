@@ -1,12 +1,14 @@
 # OpenIddict Server Demo!
 
-This is the code for the OpenIddict server. The server is created in .NET 7.0 and demonstrates the following OAuth 2.0 flows:
+This is the code for the OAuth 2.0 and OpenID Connect server implemented using OpenIddict in .NET 7.0. The implementation demonstrates the following flows:
 
 - Client Credentials Flow
 - Authorization Code Flow (with PKCE)
 - Password Credentials Flow
 
-The server uses ASP.NET core identity and also supports the following **external providers**:
+It also supports explicit consent type.
+
+The server uses ASP.NET core identity. It also supports the following **external providers**:
 
 - Google
 - Microsoft
@@ -25,7 +27,7 @@ There is also a WebAPI client named WeatherAPIClient created in .NET 7.0 to demo
 
 ### Postman collection
 
-There is also a postman collection that can be downloaded from [here](https://api.postman.com/collections/2187028-b011320f-ee77-4f4b-a659-92b5dffb62d3?access_key=PMAT-01H753MC7KAEV4EECDRXD8ZZGJ), which demonstrates how to get **access token** using the following flows:
+There is a postman collection that can be downloaded from [here](https://api.postman.com/collections/2187028-b011320f-ee77-4f4b-a659-92b5dffb62d3?access_key=PMAT-01H753MC7KAEV4EECDRXD8ZZGJ), which demonstrates how to get **access token** using the following flows:
 
 - Client Credentials Flow
 - Authorizaton Code Flow (with PKCE)

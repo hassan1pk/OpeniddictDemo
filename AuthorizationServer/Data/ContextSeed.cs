@@ -26,7 +26,7 @@ namespace AuthorizationServer.Data
             //Seed Default User
             var defaultUser = new ApplicationUser
             {
-                UserName = "mehwish",
+                UserName = "mehwish@gmail.com",
                 Email = "mehwish@gmail.com",
                 FirstName = "Mehwish",
                 LastName = "Zafar",

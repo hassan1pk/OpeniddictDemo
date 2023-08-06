@@ -2,10 +2,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AuthorizationServer.Data;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OpenIddict.Abstractions;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace AuthorizationServer
 {
@@ -32,6 +34,7 @@ namespace AuthorizationServer
             {
                 await manager.CreateAsync(new OpenIddictApplicationDescriptor
                 {
+                    ConsentType = ConsentTypes.Explicit,
                     ClientId = "postman",
                     ClientSecret = "postman-secret",
                     DisplayName = "Postman",
@@ -56,6 +59,7 @@ namespace AuthorizationServer
             {
                 await manager.CreateAsync(new OpenIddictApplicationDescriptor
                 {
+                    ConsentType = ConsentTypes.Implicit,
                     ClientId = "webapi",
                     ClientSecret = "webapi-secret",
                     DisplayName = "WebAPI",
