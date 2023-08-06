@@ -99,7 +99,7 @@ namespace AuthorizationServer.Controllers
             {
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, info.Principal.FindFirstValue(ClaimTypes.Email))
+                    new Claim(ClaimTypes.Name, info.Principal.FindFirstValue(ClaimTypes.Email)!)
                 };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -116,7 +116,7 @@ namespace AuthorizationServer.Controllers
                 ViewData["ReturnUrl"] = returnUrl;
                 ViewData["Provider"] = info.LoginProvider;
                 var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-                return View("ExternalLogin", new ExternalLoginModel { Email = email });
+                return View("ExternalLogin", new ExternalLoginModel { Email = email! });
             }
         }
 
@@ -133,7 +133,7 @@ namespace AuthorizationServer.Controllers
 
             var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, info.Principal.FindFirstValue(ClaimTypes.Email))
+                    new Claim(ClaimTypes.Name, info.Principal.FindFirstValue(ClaimTypes.Email)!)
                 };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -160,8 +160,8 @@ namespace AuthorizationServer.Controllers
                 user = new ApplicationUser();
                 user.Email = model.Email;
                 user.UserName = model.Email;
-                user.FirstName = model.Principal.FindFirstValue(ClaimTypes.GivenName);
-                user.LastName = model.Principal.FindFirstValue(ClaimTypes.Surname);
+                user.FirstName = model.Principal.FindFirstValue(ClaimTypes.GivenName)!;
+                user.LastName = model.Principal.FindFirstValue(ClaimTypes.Surname)!;
                 //user = _mapper.Map<User>(model);
                 result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
