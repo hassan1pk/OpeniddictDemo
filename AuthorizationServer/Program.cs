@@ -33,7 +33,13 @@ services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"];
             microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
             microsoftOptions.SignInScheme = IdentityConstants.ExternalScheme;
-        });
+        })
+        .AddFacebook(facebookOptions =>
+        {
+            facebookOptions.AppId = configuration["Authentication:Facebook:AppId"];
+            facebookOptions.AppSecret = configuration["Authentication:Facebook:AppSecret"];
+            facebookOptions.SignInScheme = IdentityConstants.ExternalScheme;
+        }); ;
 
 //.AddExternalCookie();
 
