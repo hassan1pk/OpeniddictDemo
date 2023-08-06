@@ -41,38 +41,6 @@ services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             facebookOptions.SignInScheme = IdentityConstants.ExternalScheme;
         }); ;
 
-//.AddExternalCookie();
-
-
-
-//builder.Services.AddIdentity<ApplicationUser, IdentityRole>(config =>
-//{
-//    //Setting some configurations
-//    config.User.RequireUniqueEmail = true;
-//    config.Password.RequireNonAlphanumeric = false;
-//    config.SignIn = new SignInOptions() { RequireConfirmedAccount = false, RequireConfirmedEmail = false, RequireConfirmedPhoneNumber = false };
-//    //config.Cookies.ApplicationCookie.AutomaticChallenge = false;
-//    //config.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents()
-//    //{
-//    //    OnRedirectToLogin = context =>
-//    //    {
-//    //        if (context.Request.Path.StartsWithSegments("/api") &&
-//    //        context.Response.StatusCode == 200)
-//    //            context.Response.StatusCode = 401;
-//    //        return Task.CompletedTask;
-//    //    },
-//    //    OnRedirectToAccessDenied = context =>
-//    //    {
-//    //        if (context.Request.Path.StartsWithSegments("/api") &&
-//    //        context.Response.StatusCode == 200)
-//    //            context.Response.StatusCode = 403;
-//    //        return Task.CompletedTask;
-//    //    }
-//    //};
-//})
-//        .AddEntityFrameworkStores<ApplicationDbContext>().AddSignInManager()
-//.AddDefaultTokenProviders();
-
 services.AddIdentityCore<ApplicationUser>(options =>
 {
     options.User.RequireUniqueEmail = true;
@@ -83,21 +51,11 @@ services.AddIdentityCore<ApplicationUser>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-//builder.Services.ConfigureApplicationCookie(options =>
-//{    
-//   options.Events.OnRedirectToLogin = context =>
-//    {
-//        context.Response.StatusCode = 401;
-
-//        return Task.CompletedTask;
-//    };
-//});
-
 services.AddDbContext<IdentityDbContext>(options =>
 {
     // Configure the context to use an in-memory store.
     //options.UseInMemoryDatabase(nameof(IdentityDbContext));
-    options.UseSqlite(builder.Configuration.GetConnectionString("IdentityDatabase"));
+    options.UseSqlite(builder.Configuration.GetConnectionString("OpenIddictDatabase"));
 
     // Register the entity sets needed by OpenIddict.
     options.UseOpenIddict();
@@ -105,9 +63,7 @@ services.AddDbContext<IdentityDbContext>(options =>
 
 services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseSqlite(builder.Configuration.GetConnectionString("SqliteDatabase"));
-
-    
+    options.UseSqlite(builder.Configuration.GetConnectionString("IdentityDatabase"));    
 });
 
 services.AddOpenIddict()

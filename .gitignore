@@ -367,3 +367,6 @@ FodyWeavers.xsd
 /AuthorizationServer/LocalDatabase.db
 /AuthorizationServer/LocalDatabase.db-shm
 /AuthorizationServer/LocalDatabase.db-wal
+/AuthorizationServer/OpenIddictDatabase.db
+/AuthorizationServer/OpenIddictDatabase.db-shm
+/AuthorizationServer/OpenIddictDatabase.db-wal
