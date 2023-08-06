@@ -42,3 +42,11 @@ Refer to the following articles for generating secrets for different providers:
 - [Google](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/social/google-logins?view=aspnetcore-7.0)
 - [Microsoft](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/social/microsoft-logins?view=aspnetcore-7.0)
 - [Facebook](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/social/facebook-logins?view=aspnetcore-7.0)
+
+## To be done
+
+- Sign up
+- Email confirmation
+- Two factor autentication (2FA)
+- Other consent types
+- Fix issue with facebook login
