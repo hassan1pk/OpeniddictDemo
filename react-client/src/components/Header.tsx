@@ -12,7 +12,9 @@ const Header = (props: IProps) => {
   const token = useSelector(selectToken);
 
   const handleLogin = () => {
-    dispatch(setLoginDetails({ token: "abc" }));
+    dispatch(
+      setLoginDetails({ token: Math.random().toString(16).substring(2, 10) })
+    );
   };
 
   const handleLogout = () => {

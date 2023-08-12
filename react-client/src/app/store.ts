@@ -15,7 +15,10 @@ const persistConfig: PersistConfig<
   version: 1,
 };
 
-const persistedReducer = persistReducer<any>(persistConfig, rootReducer);
+const persistedReducer = persistReducer<AppStateType>(
+  persistConfig,
+  rootReducer
+);
 const store = configureStore({
   reducer: persistedReducer,
 });
