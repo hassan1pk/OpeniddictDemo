@@ -1,19 +1,31 @@
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import loginReducer from "../features/login/loginSlice";
-//import { ILoginState } from "../types/ILoginState";
+import { configureStore } from "@reduxjs/toolkit";
+import storage from "redux-persist/es/storage";
+import { PersistConfig, persistReducer, persistStore } from "redux-persist";
+import rootReducer, { AppStateType } from "./RootReducer";
 
-const rootReducer = combineReducers({
-  login: loginReducer,
+const persistConfig: PersistConfig<
+  AppStateType,
+  AppStateType,
+  AppStateType,
+  AppStateType
+> = {
+  key: "root",
+  storage: storage,
+  whitelist: ["login"],
+  version: 1,
+};
+
+const persistedReducer = persistReducer<any>(persistConfig, rootReducer);
+const store = configureStore({
+  reducer: persistedReducer,
 });
 
-/*export interface AppState {
-  login: ILoginState;
-}*/
+export const persistor = persistStore(store);
 
-export type AppState = ReturnType<typeof rootReducer>;
+export default store;
 
-export default configureStore({
+/*export default configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }),
-});
+});*/

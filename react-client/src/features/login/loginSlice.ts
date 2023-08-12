@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { ILoginState } from "../../types/ILoginState";
-import { AppState } from "../../app/store";
+import { AppStateType } from "../../app/RootReducer";
 
 const initialState: ILoginState = {
   token: "",
@@ -22,6 +22,6 @@ const loginSlice = createSlice({
 
 export const { setLoginDetails, setSignOut } = loginSlice.actions;
 
-export const selectToken = (state: AppState) => state.login.token;
+export const selectToken = (state: AppStateType) => state.login.token;
 
 export default loginSlice.reducer;
