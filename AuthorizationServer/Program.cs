@@ -80,7 +80,7 @@ services.AddOpenIddict()
         .AddServer(options =>
         {
             options
-                .AllowClientCredentialsFlow()
+                .AllowClientCredentialsFlow()                
                 .AllowAuthorizationCodeFlow().RequireProofKeyForCodeExchange()
                 .AllowPasswordFlow().RequireProofKeyForCodeExchange()
                 .AllowRefreshTokenFlow();
@@ -127,6 +127,12 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseCors(cors =>
+{
+    cors.AllowAnyOrigin();
+    cors.AllowAnyMethod();
+    cors.AllowAnyHeader();
+});
 app.UseStaticFiles();
 
 app.UseRouting();
