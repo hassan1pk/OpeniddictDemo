@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectToken,
+  selectAccessToken,
   setLoginDetails,
   setSignOut,
 } from "../features/login/loginSlice";
@@ -23,7 +23,7 @@ const callbackUrl = currentWindowUrl + "/oauthcallback";
 const Header = (props: IProps) => {
   const dispatch = useDispatch();
   const [authWindow, setAuthWindow] = useState<Window | null>(null);
-  const token = useSelector(selectToken);
+  const accessToken = useSelector(selectAccessToken);
   const [codeChallenge, setCodeChallenge] = useState<string | null>(null);
   const [codeChallengeMethod, setCodeChallengeMethod] = useState<string | null>(
     null
@@ -71,7 +71,9 @@ const Header = (props: IProps) => {
   const handleLogin = async () => {
     const auhtorizationUrl = `${authUrl}?response_type=code&client_id=postman&client_secret=postman-secret&redirect_uri=${encodeURI(
       callbackUrl
-    )}&scope=api&code_challenge=${codeChallenge}&code_challenge_method=${codeChallengeMethod}`;
+    )}&scope=${encodeURI(
+      "api offline_access"
+    )}&code_challenge=${codeChallenge}&code_challenge_method=${codeChallengeMethod}`;
 
     // Open the auth URL in a new window or tab
     let newWindow = window.open(auhtorizationUrl, "_blank");
@@ -96,7 +98,12 @@ const Header = (props: IProps) => {
 
       .then((res: any) => {
         console.log(res);
-        dispatch(setLoginDetails({ token: res.access_token }));
+        dispatch(
+          setLoginDetails({
+            accessToken: res.access_token,
+            refreshToken: res.refresh_token,
+          })
+        );
       })
       .catch(() => {
         alert("Access token could not be retrieved");
@@ -110,7 +117,7 @@ const Header = (props: IProps) => {
   //console.log("token is ", token);
   return (
     <>
-      {token === undefined || token === "" ? (
+      {accessToken === undefined || accessToken === "" ? (
         <input
           type="button"
           id="btnLogin"

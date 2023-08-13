@@ -1,3 +1,4 @@
 export interface ILoginState {
-  token: string;
+  accessToken: string;
+  refreshToken: string;
 }

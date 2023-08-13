@@ -2,8 +2,8 @@ import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import store from "../store";
 
 axios.interceptors.request.use((config) => {
-  const token = store.getState().login.token;
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  const accessToken = store.getState().login.accessToken;
+  if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
   return config;
 });
 
