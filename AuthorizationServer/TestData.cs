@@ -38,7 +38,7 @@ namespace AuthorizationServer
                     ClientId = "postman",
                     ClientSecret = "postman-secret",
                     DisplayName = "Postman",
-                    RedirectUris = { new Uri("https://oauth.pstmn.io/v1/callback") },
+                    RedirectUris = { new Uri("https://oauth.pstmn.io/v1/callback"), new Uri("http://localhost:3000/oauthcallback") },
                     Permissions =
                     {
                         OpenIddictConstants.Permissions.Endpoints.Authorization,

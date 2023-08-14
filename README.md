@@ -20,10 +20,10 @@ Both OpenIddict and ASP.NET core identity are configured to use separate SQLite 
 
 When the project is started, the ASP.NET core identity is automatically seeded with a sample user.
 
-## Client
+## Clients
 
-.
-There is also a WebAPI client named WeatherAPIClient created in .NET 7.0 to demonstrate how to use the OpenIddict server.
+### .NET 7 WebAPI client
+There is a WebAPI client named WeatherAPI Client created in .NET 7.0 to demonstrate how to use the OpenIddict server.
 
 ### Postman collection
 
@@ -32,6 +32,17 @@ There is a postman collection that can be downloaded from [here](https://api.pos
 - Client Credentials Flow
 - Authorizaton Code Flow (with PKCE)
 - Password Credentials Flow
+
+There is also a request in postman collection that makes GET request to the WeatherAPI client to get the list of weather.
+
+### React client
+There is a client created in React with Typescript. The client demonstrates how to login using the Authorization Code Flow and then makes the GET request to the WeatherAPI to get the list of weather.
+
+The client uses Redux to manage the state. The state is persisted in the browser's local storage. The state stores the access token and the refresh token.
+
+The client uses Axios to fetch and post data using REST APIs.
+
+The code makes use of Axios response interceptor to obtain the refresh token if HTTP error 401 is received when making the API call.
 
 ## External providers
 
