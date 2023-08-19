@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import store from "../store";
-import { setLoginDetails } from "../../features/login/loginSlice";
+import { setLoginDetails, setSignOut } from "../../features/login/loginSlice";
 
 axios.interceptors.request.use((config) => {
   const accessToken = store.getState().login.accessToken;
@@ -77,7 +77,11 @@ axios.interceptors.response.use(
           return Promise.reject(error);
         }
       } // Return or throw the error for any other cases return Promise.reject(error); } );
-      else {
+      else if (status === 400) {
+        if ((data as any).error === "invalid_grant") {
+          store.dispatch(setSignOut({}));
+        }
+      } else {
         console.error(error);
         return Promise.reject(error);
       }
