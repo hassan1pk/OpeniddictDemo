@@ -1,18 +1,13 @@
 ﻿using AuthorizationServer.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
+using AuthorizationServer.Enums;
 
 namespace AuthorizationServer.Data
 {
     public class ContextSeed
     {
-        public enum Roles
-        {
-            SuperAdmin,
-            Admin,
-            Moderator,
-            Basic
-        }
+       
         public static async Task SeedRolesAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {            
             //Seed Roles

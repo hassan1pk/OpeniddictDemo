@@ -111,6 +111,8 @@ services.AddOpenIddict()
 
 services.AddHostedService<TestData>();
 
+services.AddAutoMapper(typeof(Program));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
