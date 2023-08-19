@@ -223,7 +223,7 @@ namespace AuthorizationServer.Controllers
             {
                 return Forbid(
                     authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
-                    properties: new AuthenticationProperties(new Dictionary<string, string>
+                    properties: new AuthenticationProperties(new Dictionary<string, string?>
                     {
                         [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
                         [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
@@ -255,7 +255,7 @@ namespace AuthorizationServer.Controllers
             authorization ??= await _authorizationManager.CreateAsync(
                 identity: identity,
                 subject: await _userManager.GetUserIdAsync(user),
-                client: await _applicationManager.GetIdAsync(application),
+                client: (await _applicationManager.GetIdAsync(application))!,
                 type: AuthorizationTypes.Permanent,
                 scopes: identity.GetScopes());
 

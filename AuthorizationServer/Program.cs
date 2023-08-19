@@ -44,7 +44,11 @@ services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 services.AddIdentityCore<ApplicationUser>(options =>
 {
     options.User.RequireUniqueEmail = true;
-    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 8;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
 }).AddSignInManager()
 .AddRoles<IdentityRole>()
     .AddRoleManager<RoleManager<IdentityRole>>()

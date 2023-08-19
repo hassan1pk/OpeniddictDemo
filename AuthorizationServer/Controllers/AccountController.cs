@@ -213,7 +213,7 @@ namespace AuthorizationServer.Controllers
             }
 
             var user = _mapper.Map<ApplicationUser>(userModel);
-            var result = await _userManager.CreateAsync(user, userModel.Password);
+            var result = await _userManager.CreateAsync(user, userModel.Password!);
             if (!result.Succeeded)
             {
                 foreach (var error in result.Errors)
