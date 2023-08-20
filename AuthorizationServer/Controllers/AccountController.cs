@@ -58,6 +58,11 @@ namespace AuthorizationServer.Controllers
                     ModelState.AddModelError("", "Invalid UserName or Password");
                     return View(model);
                 }
+                if(_userManager.Options.SignIn.RequireConfirmedEmail && !user.EmailConfirmed)
+                {
+                    ModelState.AddModelError("", "Your email address has not been confirmed. Click on the activation link sent to your email address.");
+                    return View(model);
+                }
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, model.Username)
@@ -231,7 +236,18 @@ namespace AuthorizationServer.Controllers
 
             await _userManager.AddToRoleAsync(user, Roles.Basic.ToString());
 
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var confirmationUrl = Url.Action(nameof(ConfirmEmail), "Account", new { token, email = user.Email }, Request.Scheme);
+            string confirmationLink = $@"<a href='{confirmationUrl}'>Click here to activate your account!</a>";
+            _emailSender.SendEmail(new string[] { user.Email! }, "Confirmation email link", confirmationLink);
+
+            return RedirectToAction(nameof(SuccessRegistration));
+        }
+
+        [HttpGet]
+        public IActionResult SuccessRegistration()
+        {
+            return View();
         }
 
         [HttpGet]
@@ -292,6 +308,28 @@ namespace AuthorizationServer.Controllers
         }
         [HttpGet]
         public IActionResult ResetPasswordConfirmation()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string token, string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return View("Error");
+            if(user.EmailConfirmed)
+            {
+                ViewBag.EmailAlreadyConfirmed = true;
+                return View(nameof(ConfirmEmail));
+            }
+            ViewBag.EmailAlreadyConfirmed = false;
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            return View(result.Succeeded ? nameof(ConfirmEmail) : "Error");
+        }
+
+        [HttpGet]
+        public IActionResult Error()
         {
             return View();
         }

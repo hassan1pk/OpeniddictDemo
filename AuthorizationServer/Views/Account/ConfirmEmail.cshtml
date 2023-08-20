@@ -1,0 +1,15 @@
+﻿<h1>ConfirmEmail</h1>
+<div>
+    <p>
+        @if(ViewBag.EmailAlreadyConfirmed)
+        {
+            @:Your email address has already been confirmed.
+        }
+        else
+        {
+            @:Thank you for confirming your email.
+        }
+        
+        Go to the <a href="@Url.ActionLink("Login","Account")">login</a> page.
+    </p>
+</div>

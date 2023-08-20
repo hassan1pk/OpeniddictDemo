@@ -1,5 +1,6 @@
 using AuthorizationServer;
 using AuthorizationServer.Configurations;
+using AuthorizationServer.CustomTokenProviders;
 using AuthorizationServer.Data;
 using AuthorizationServer.Models;
 using AuthorizationServer.Utilities.EmailSender;
@@ -46,19 +47,28 @@ services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 services.AddIdentityCore<ApplicationUser>(options =>
 {
     options.User.RequireUniqueEmail = true;
+
     options.Password.RequireNonAlphanumeric = true;
     options.Password.RequireDigit = true;
     options.Password.RequiredLength = 8;
     options.Password.RequireUppercase = true;
     options.Password.RequireLowercase = true;
+
+    options.SignIn.RequireConfirmedEmail = false;
+
+    options.Tokens.EmailConfirmationTokenProvider = "emailconfirmation";
+
 }).AddSignInManager()
 .AddRoles<IdentityRole>()
     .AddRoleManager<RoleManager<IdentityRole>>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
-.AddDefaultTokenProviders();
+.AddDefaultTokenProviders()
+.AddTokenProvider<EmailConfirmationTokenProvider<ApplicationUser>>("emailconfirmation");
 
 services.Configure<DataProtectionTokenProviderOptions>(opt =>
    opt.TokenLifespan = TimeSpan.FromHours(2));
+services.Configure<EmailConfirmationTokenProviderOptions>(opt =>
+     opt.TokenLifespan = TimeSpan.FromDays(3));
 
 services.AddDbContext<IdentityDbContext>(options =>
 {
