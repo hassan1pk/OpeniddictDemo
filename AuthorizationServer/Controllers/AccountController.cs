@@ -49,11 +49,13 @@ namespace AuthorizationServer.Controllers
                 var user = await _userManager.FindByEmailAsync(model.Username);
                 if (user == null)
                 {
+                    ModelState.AddModelError("", "Invalid UserName or Password");
                     return View(model);
                 }
                 var result = await _userManager.CheckPasswordAsync(user, model.Password);
                 if(result == false)
                 {
+                    ModelState.AddModelError("", "Invalid UserName or Password");
                     return View(model);
                 }
                 var claims = new List<Claim>

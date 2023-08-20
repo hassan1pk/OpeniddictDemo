@@ -1,9 +1,12 @@
 ﻿@model AuthorizationServer.Models.LoginViewModel
 <form autocomplete="off" asp-route="Login">
     <input type="hidden" asp-for="ReturnUrl" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="card">
         <input type="text" class="form-control form-control-lg" placeholder="Username" asp-for="Username" autofocus>
+        <span asp-validation-for="Username" class="text-danger"></span>
         <input type="password" class="form-control form-control-lg form-control-last" placeholder="Password" asp-for="Password">
+        <span asp-validation-for="Password" class="text-danger"></span>
     </div>
     <p>
         <button type="submit" class="btn btn-dark btn-block mt-3">Login</button>
