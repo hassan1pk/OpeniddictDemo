@@ -20,3 +20,16 @@ Storing Microsoft client id and client secret in secret storage
 --------------------------------------------------------
 dotnet user-secrets set "Authentication:Microsoft:ClientId" "<client-id>"
 dotnet user-secrets set "Authentication:Microsoft:ClientSecret" "<client-secret>"
+
+Storing username and password for SMTP email configuration in secret storage
+-------------------------------------------------------
+dotnet user-secrets set "EmailConfiguration:Username" "<SMTP-email-username>"
+dotnet user-secrets set "EmailConfiguration:Password" "<SMTP-email-password>"
+
+List all secrets in secret storage
+----------------------------------
+dotnet user-secrets list
+
+Remove a single secret from secret storage
+------------------------------------------
+dotnet user-secrets remove "<secret-name>"

@@ -1,6 +1,8 @@
 using AuthorizationServer;
+using AuthorizationServer.Configurations;
 using AuthorizationServer.Data;
 using AuthorizationServer.Models;
+using AuthorizationServer.Utilities.EmailSender;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
@@ -54,6 +56,9 @@ services.AddIdentityCore<ApplicationUser>(options =>
     .AddRoleManager<RoleManager<IdentityRole>>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
+
+services.Configure<DataProtectionTokenProviderOptions>(opt =>
+   opt.TokenLifespan = TimeSpan.FromHours(2));
 
 services.AddDbContext<IdentityDbContext>(options =>
 {
@@ -116,6 +121,13 @@ services.AddOpenIddict()
 services.AddHostedService<TestData>();
 
 services.AddAutoMapper(typeof(Program));
+
+var emailConfig = builder.Configuration
+        .GetSection("EmailConfiguration")
+        .Get<EmailConfiguration>();
+services.AddSingleton(emailConfig!);
+
+services.AddScoped<IEmailSender, EmailSender>();
 
 var app = builder.Build();
 
